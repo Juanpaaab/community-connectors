@@ -88,6 +88,20 @@ function getConfig(request) {
     .setPlaceholder('https://my-url.org/json');
 
   config
+    .newTextInput()
+    .setId('method')
+    .setName('Enter the HTTP method')
+    .setHelpText('e.g. https://my-url.org/json')
+    .setPlaceholder('https://my-url.org/json');
+
+  config
+    .newTextInput()
+    .setId('payload')
+    .setName('Enter the payload to the URL')
+    .setHelpText('e.g. https://my-url.org/json')
+    .setPlaceholder('https://my-url.org/json');
+
+  config
     .newCheckbox()
     .setId('cache')
     .setName('Cache response')
@@ -114,9 +128,21 @@ function getConfig(request) {
  * @param   {string} url  The URL to get the data from
  * @returns {Object}      The response object
  */
-function fetchJSON(url) {
+function fetchJSON(url, ApiKey, method, request = null) {
   try {
-    var response = UrlFetchApp.fetch(url);
+    if(method == 'POST'){
+      var options = {
+        'method' : 'post',
+        'payload' : request
+      };
+      
+      var response = UrlFetchApp.fetch(url, options);
+
+    }else{
+
+      var response = UrlFetchApp.fetch(url);
+      
+    }
   } catch (e) {
     sendUserError('"' + url + '" returned an error:' + e);
   }
@@ -155,7 +181,7 @@ function getCachedData(url) {
       }
     }
   } else {
-    content = fetchJSON(url);
+    content = fetchJSON(url,);
 
     for (var key in content) {
       cacheData[cacheKey + '.' + key] = JSON.stringify(content[key]);
